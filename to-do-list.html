@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>To-do App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #0f0f0f;
+      color: #00f7ff;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00f7ff;
+      text-shadow: 0 0 10px #00f7ff;
+    }
+
+    .todo-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #00f7ff;
+      border-radius: 8px;
+      background: transparent;
+      color: #00f7ff;
+      outline: none;
+      box-shadow: 0 0 8px #00f7ff33;
+      transition: 0.3s;
+    }
+
+    input[type="text"]:focus {
+      box-shadow: 0 0 12px #00f7ff;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: #00f7ff;
+      color: #0f0f0f;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 10px #00f7ff88;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #0f0f0f;
+      color: #00f7ff;
+      border: 1px solid #00f7ff;
+    }
+
+    .task {
+      background: #1a1a1a;
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 10px #00f7ff44;
+    }
+
+    .task span,
+    .task input.edit-input {
+      flex: 1;
+      font-size: 16px;
+      color: #00f7ff;
+      margin-right: 10px;
+    }
+
+    .task input.edit-input {
+      padding: 8px;
+      border: 1px solid #00f7ff;
+      border-radius: 6px;
+      background: transparent;
+      box-shadow: 0 0 8px #00f7ff33;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .task-actions i {
+      cursor: pointer;
+      font-size: 18px;
+      color: #00f7ff;
+      transition: 0.3s ease;
+    }
+
+    .task-actions i:hover {
+      color: #ff0066;
+      text-shadow: 0 0 5px #ff0066;
+    }
+
+    @media (max-width: 600px) {
+      .todo-input {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🔥 To-do List</h1>
+    <div class="todo-input">
+      <input type="text" id="taskInput" placeholder="Enter your task..." />
+      <button onclick="addTask()">Add</button>
+    </div>
+    <div id="taskList"></div>
+  </div>
+
+  <script>
+    function addTask() {
+      const taskInput = document.getElementById('taskInput');
+      const taskText = taskInput.value.trim();
+      if (!taskText) return;
+
+      const taskList = document.getElementById('taskList');
+
+      const taskDiv = document.createElement('div');
+      taskDiv.className = 'task';
+
+      const taskSpan = document.createElement('span');
+      taskSpan.textContent = taskText;
+
+      const actionDiv = document.createElement('div');
+      actionDiv.className = 'task-actions';
+
+      const editBtn = createIcon('fas fa-pen', () => editTask(taskDiv, taskSpan, editBtn, deleteBtn));
+      const deleteBtn = createIcon('fas fa-trash', () => taskDiv.remove());
+
+      actionDiv.append(editBtn, deleteBtn);
+      taskDiv.append(taskSpan, actionDiv);
+      taskList.append(taskDiv);
+
+      taskInput.value = '';
+    }
+
+    function createIcon(classes, onClick) {
+      const icon = document.createElement('i');
+      icon.className = classes;
+      icon.onclick = onClick;
+      return icon;
+    }
+
+    function editTask(taskDiv, taskSpan, editBtn, deleteBtn) {
+      const inputEdit = document.createElement('input');
+      inputEdit.type = 'text';
+      inputEdit.className = 'edit-input';
+      inputEdit.value = taskSpan.textContent;
+
+      const saveBtn = createIcon('fas fa-check', () => {
+        const newValue = inputEdit.value.trim();
+        if (newValue !== '') {
+          taskSpan.textContent = newValue;
+        }
+        taskDiv.replaceChild(taskSpan, inputEdit);
+        actionDiv.replaceChild(editBtn, saveBtn);
+        actionDiv.replaceChild(deleteBtn, cancelBtn);
+      });
+      saveBtn.style.color = 'lime';
+
+      const cancelBtn = createIcon('fas fa-xmark', () => {
+        taskDiv.replaceChild(taskSpan, inputEdit);
+        actionDiv.replaceChild(editBtn, saveBtn);
+        actionDiv.replaceChild(deleteBtn, cancelBtn);
+      });
+      cancelBtn.style.color = 'gray';
+
+      const actionDiv = taskDiv.querySelector('.task-actions');
+      taskDiv.replaceChild(inputEdit, taskSpan);
+      actionDiv.replaceChild(saveBtn, editBtn);
+      actionDiv.replaceChild(cancelBtn, deleteBtn);
+
+      inputEdit.focus();
+    }
+  </script>
+</body>
+
+</html>
